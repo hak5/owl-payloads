@@ -1,14 +1,16 @@
 #!/bin/bash
 #
 # Title: WIFI_CONNECT
-# Description: Simplifies WiFi client mode connection from internal radio. Expects $WIFI_SSID (network name) and $WIFI_PASS (wpa key)
+# Description: Simplifies WiFi client mode connection. Expects $WIFI_RADIO (e.g. wlan0), $WIFI_SSID (network name) and $WIFI_PASS (wpa key)
 # Author: Hak5Darren
-# Version: 1.0
+
 
 function WIFI_CONNECT() {
+    logger running extension: wifi_connect
+    ifconfig wlan0 up;sleep 2
     echo -e "network={\nssid=\"$WIFI_SSID\"\npsk=\"$WIFI_PASS\"\npriority=1\n}">/tmp/wpa.conf
     wpa_supplicant -B -Dnl80211 -i wlan0 -c /tmp/wpa.conf
-    ifconfig $WIFI_RADIO up
-    udhcpc -i $WIFI_RADIO
+    while(iwconfig wlan0 | grep Not-Associated); do sleep 1; done
+    udhcpc -i wlan0
 }
 export -f WIFI_CONNECT
