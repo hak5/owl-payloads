@@ -1,9 +1,8 @@
 #!/bin/bash
 #
 # Title: WIFI_CONNECT
-# Description: Simplifies WiFi client mode connection. Expects $WIFI_RADIO (e.g. wlan0), $WIFI_SSID (network name) and $WIFI_PASS (wpa key)
+# Description: Simplifies WiFi client mode connection. Expects $WIFI_SSID and $WIFI_PASS
 # Author: Hak5Darren
-
 
 function WIFI_CONNECT() {
     logger running extension: wifi_connect
