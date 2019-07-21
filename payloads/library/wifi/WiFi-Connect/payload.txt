@@ -1,0 +1,11 @@
+# Title: Simple WiFi Connection
+# Author: Hak5Darren
+# Version: 1.0
+
+# WiFi Client Setup
+WIFI_SSID="Surf Chicky"
+WIFI_PASS="wholefoods"
+
+LED SETUP
+WIFI_CONNECT
+LED ATTACK

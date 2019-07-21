@@ -1,0 +1,106 @@
+#!/bin/bash
+#
+# Title: Open AP Nmap Scanner
+# Author: Hak5Darren
+# Version: 1.0
+#
+# Description: Scans for open access points, then connects to each and runs an Nmap scan saving logs to the loot folder
+#
+# LED SETUP - Scanning
+# LED ATTACK - Connected, running nmap scan
+#
+# See nmap --help for options. Default "-sP" ping scans the address space for fast host discovery.
+
+NMAP_OPTIONS="-sP"
+LOOT_DIR=/root/loot/open_ap_nmap_scan
+MAX_CIDR=20
+DEBUG=1
+
+function scan_wifi() {
+	[[ $DEBUG == 1 ]] && echo Scanning for open access points | tee -a /tmp/payload.log
+	iwlist wlan0 scan > /tmp/wifi_scan
+	cat /tmp/wifi_scan | grep "Encryption key:off" -A1 | grep ESSID | sort | uniq | cut -c 28- | sed "s/.$//g" > /tmp/open
+	total_aps=$(cat /tmp/open | wc -l)
+	[[ $DEBUG == 1 ]] && echo Found "$total_aps" open access points | tee -a /tmp/payload.log
+}
+
+function check_ap() {
+	current_ap=$(sed -n "$on"p /tmp/open)
+	[[ $DEBUG == 1 ]] && echo "-------------------------------" | tee -a /tmp/payload.log
+	current_ap_mac=$(cat /tmp/wifi_scan | grep "$current_ap" -B5 | grep Address | awk {'print $5'} | head -1)
+	[[ $DEBUG == 1 ]] && echo Selected AP MAC: "$current_ap_mac" | tee -a /tmp/payload.log
+	if grep -i -q "$current_ap_mac" /tmp/nmap_scanned; then
+		[[ $DEBUG == 1 ]] && echo Skipping - Already scanned AP: "$current_ap" with MAC: "$current_ap_mac" | tee -a /tmp/payload.log
+	else
+		connect_wifi
+		scan_network
+	fi
+}
+
+function connect_wifi() {
+	LED STAGE1
+	[[ $DEBUG == 1 ]] && echo Connecting to Open WiFi AP: "$current_ap" | tee -a /tmp/payload.log
+	ifconfig wlan0 down
+	iwconfig wlan0 mode Managed essid "$current_ap"
+	ifconfig wlan0 up
+	while(iwconfig wlan0 | grep Not-Associated); do sleep 1; done
+	[[ $DEBUG == 1 ]] && echo "Connected to AP number $on with SSID $current_ap" | tee -a /tmp/payload.log
+	udhcpc -i wlan0
+	while [ -z "$SUBNET" ]; do
+		sleep 1 && find_subnet
+	done
+	APMAC=$(iw wlan0 link | grep Connected | awk {print'$3'})
+	[[ $DEBUG == 1 ]] && echo "AP MAC Address/BSSID: $APMAC" | tee -a /tmp/payload.log
+	[[ $DEBUG == 1 ]] && iwconfig wlan0 | grep ESSID | tee -a /tmp/payload.log
+	[[ $DEBUG == 1 ]] && ifconfig wlan0 | grep inet | tee -a /tmp/payload.log
+}
+
+function scan_network() {
+	LED STAGE2
+	find_subnet
+	[[ $DEBUG == 1 ]] && echo "Found Subnet: $SUBNET" | tee -a /tmp/payload.log
+	CIDR=$(echo $SUBNET | cut -d '/' -f 2)
+	[[ $DEBUG == 1 ]] && echo "CIDR: $CIDR" | tee -a /tmp/payload.log
+	if [ "$CIDR" -ge "$MAX_CIDR" ]
+	then
+		[[ $DEBUG == 1 ]] && echo "Starting network scan" | tee -a /tmp/payload.log
+		nmap $NMAP_OPTIONS $SUBNET -oN "$LOOT_DIR/$current_ap-$APMAC.txt" &>/dev/null 
+	else
+		[[ $DEBUG == 1 ]] && echo "Network too large - skipping scan" | tee -a /tmp/payload.log
+	fi
+	echo $APMAC >> /tmp/nmap_scanned
+}
+
+function find_subnet() {
+	SUBNET=$(ip addr | grep -i wlan0 | grep -i inet | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}[\/]{1}[0-9]{1,2}" | sed 's/\.[0-9]*\//\.0\//')
+	[[ $DEBUG == 1 ]] && echo "Found subet for network $current_ap as $SUBNET" | tee -a /tmp/payload.log
+}
+
+
+function run() {
+	while true; do
+		setup
+		scan_wifi
+		while [ "$on" -le "$total_aps" ]
+		do
+			if [ "$on" -ge 1 ]; then check_ap; fi
+			let on=on+1
+		done
+		sleep 5
+		[[ $DEBUG == 1 ]] && echo Completed recon. Restarting... | tee -a /tmp/payload.log
+	done
+}
+
+function setup() {
+	LED SETUP
+	mkdir -p $LOOT_DIR
+	touch /tmp/nmap_scanned
+	on=0
+	killall wpa_supplicant
+}
+
+# Run payload
+
+run
+
+
