@@ -6,8 +6,8 @@
 #
 # Description: Scans for open access points, then connects to each and runs an Nmap scan saving logs to the loot folder
 #
-# LED SETUP - Scanning
-# LED ATTACK - Connected, running nmap scan
+# LED SETUP: Scanning
+# LED ATTACK: Connected, running nmap scan
 #
 # See nmap --help for options. Default "-sP" ping scans the address space for fast host discovery.
 
