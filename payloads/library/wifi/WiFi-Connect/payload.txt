@@ -1,10 +1,10 @@
-# Title: Simple WiFi Connection
+# Title: Simple WiFi Connection Example
 # Author: Hak5Darren
 # Version: 1.0
 
 # WiFi Client Setup
-WIFI_SSID="Surf Chicky"
-WIFI_PASS="wholefoods"
+WIFI_SSID="network-name"
+WIFI_PASS="passphrase"
 
 LED SETUP
 WIFI_CONNECT
