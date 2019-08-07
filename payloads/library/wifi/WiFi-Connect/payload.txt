@@ -8,4 +8,6 @@ WIFI_PASS="passphrase"
 
 LED SETUP
 WIFI_CONNECT
+# optionally start SSH server
+# /etc/init.d/sshd start
 LED ATTACK
