@@ -5,7 +5,7 @@
 # Author: Hak5Darren
 
 function WIFI_CONNECT() {
-    if [ "$WIFI_INT" == "" ]; then WIFI_INT=wlan0; fi
+    [[ "x$WIFI_INT" == "x" ]] && WIFI_INT=wlan0
     ifconfig $WIFI_INT up;sleep 10
     echo -e "network={\nssid=\"$WIFI_SSID\"\npsk=\"$WIFI_PASS\"\npriority=1\n}">/tmp/wpa-$WIFI_INT.conf
     wpa_supplicant -B -Dnl80211 -i $WIFI_INT -c /tmp/wpa-$WIFI_INT.conf
