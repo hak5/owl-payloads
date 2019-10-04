@@ -5,10 +5,11 @@
 # Author: Hak5Darren
 
 function WIFI_CONNECT() {
-    ifconfig wlan0 up;sleep 10
-    echo -e "network={\nssid=\"$WIFI_SSID\"\npsk=\"$WIFI_PASS\"\npriority=1\n}">/tmp/wpa.conf
-    wpa_supplicant -B -Dnl80211 -i wlan0 -c /tmp/wpa.conf
-    while(iwconfig wlan0 | grep Not-Associated); do sleep 1; done
-    udhcpc -i wlan0
+    if [ "$WIFI_INT" == "" ]; then WIFI_INT=wlan0; fi
+    ifconfig $WIFI_INT up;sleep 10
+    echo -e "network={\nssid=\"$WIFI_SSID\"\npsk=\"$WIFI_PASS\"\npriority=1\n}">/tmp/wpa-$WIFI_INT.conf
+    wpa_supplicant -B -Dnl80211 -i $WIFI_INT -c /tmp/wpa-$WIFI_INT.conf
+    while(iwconfig $WIFI_INT | grep Not-Associated); do sleep 1; done
+    udhcpc -i $WIFI_INT
 }
 export -f WIFI_CONNECT
