@@ -1,7 +1,7 @@
 # Delayed AP Attack Mine
 ### Set your fuse, make a quick getaway, and let your Signal Owl crack WiFi while everyone else is gone
 ---
-Turn your Signal Owl into a powerful implant by using Besside-ng to attack networks. Besside-ng is an amazing application that aggressively attacks WiFi networks and obtains a hash for cracking offline. In the unlikely event WEP is found, it is cracked immediately. Your Signal Owl already has it installed - but this particular payload delays the attack so you don't have to present when it runs (or even better when no one is at the target area at all).
+Turn your Signal Owl into a powerful implant by using Besside-ng to attack networks. Besside-ng is an amazing application that aggressively attacks WiFi networks and obtains a hash for cracking offline. In the unlikely event WEP is found, it is cracked immediately. Your Signal Owl already has it installed - but this particular payload delays the attack so you don't have to be present when it runs (or even better when no one is at the target area at all).
 
 An external WiFi adapter is required for this payload. The Hak5 RT5370 was tested and works perfectly.
 
