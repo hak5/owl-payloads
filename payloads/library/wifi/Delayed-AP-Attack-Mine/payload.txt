@@ -16,7 +16,7 @@
 LED SETUP
 # Short fuse: starting in 5 minutes
 START_IN=300
-# Gather for 2 minutes
+# Attempt to comprimise selected AP for 2 minutes
 GATHER_FOR=120
 # Leave blank if you want to attack all APs
 TARGET_BSSID=""
