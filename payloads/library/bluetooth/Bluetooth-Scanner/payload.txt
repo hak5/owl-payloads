@@ -2,9 +2,11 @@
 #
 # Title: Bluetooth Scanner
 # Author: Brian Fair <blfair@gmail.com>, https://github.com/b1fair
-# Version: 1.0
+# Contributor: Technoprenerd, https://github.com/Technoprenerd
+# Version: 1.1
 #
 # Description: Scans for bluetooth devices, optionally interrogates them (hcitool info), tested with Hak5 "Mini USB Bluetooth Adapter (Qualcomm CSR8510 chipset)"
+# Contribution: Create custom bluetooth MAC addresses and names, inspired by the Hak5 forum post (https://forums.hak5.org/topic/49454-payload-basic-bluetooth-scanner/?do=findComment&comment=322623)
 #
 # LED SETUP: Scanning
 # LED ATTACK: Querying devices
@@ -17,6 +19,10 @@ BTDEV=hci0              # Set to the device to use for scanning (probably hci0)
 DEBUG=0                 # Set to 1 to enable verbose logging.
 INTERROGATE=1       	# Set to 1 to enable running "hcitool info <MAC>" on observed bluetooth MACs, 0 to disable this.
 
+#Custom Bluetooth MAC adress and name
+BT_CUSTOM_MAC="DE:AD:BE:EF:13:37"	# Set a custom Bluetooth MAC address for the device.
+BT_CUSTOM_NAME="DedSec" 		# Set a custom device name, the default of Qualcommm CSR8510 chipset is "BlueZ 5.50".
+ 
 function scan_bluetooth() {
 	LED SETUP
 	[[ $DEBUG == 1 ]] && echo ... Scanning for bluetooth devices... | tee -a /tmp/payload.log
@@ -77,9 +83,13 @@ function run() {
 
 function runonce() {
 	hciconfig $BTDEV up
+	bdaddr -i $BTDEV $BT_CUSTOM_MAC
+	hciconfig reset
+	hciconfig $BTDEV name $BT_CUSTOM_NAME
 	[[ $DEBUG == 1 ]] && echo "-----------------------------------------" | tee -a /tmp/payload.log
 	[[ $DEBUG == 1 ]] && echo Our local bluetooth device info: | tee -a /tmp/payload.log
 	[[ $DEBUG == 1 ]] && hciconfig | tee -a /tmp/payload.log
+	[[ $DEBUG == 1 ]] && hciconfig $BTDEV name | tee -a /tmp/payload.log
 	[[ $DEBUG == 1 ]] && echo "-----------------------------------------" | tee -a /tmp/payload.log
 	> /tmp/bluetooth_scan
 	> /tmp/bt_scanned
