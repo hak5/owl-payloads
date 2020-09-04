@@ -32,6 +32,14 @@ Setting INTERROGATE to 1 enables running hcitool info on all discovered devices,
 ```
 INTERROGATE=1
 ```
+Set a custom MAC address for the bluetooth device
+```
+BT_CUSTOM_MAC="DE:AD:BE:EF:13:37"
+```
+Set a custom name for the bluetooth device
+```
+BT_CUSTOM_NAME="DedSec"
+```
 
 ## 3. Sample output
 
